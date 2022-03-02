@@ -24,12 +24,21 @@ internal class LimitedHttpConnection
 
     private async Task ConnectAsync()
     {
-        IPAddress[] addresses = Dns.GetHostAddresses(_target.host);
-        foreach (IPAddress addr in addresses)
+        if (IPAddress.TryParse(_target.host, out IPAddress? address))
         {
-            socket = new (addr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            await socket.ConnectAsync(new IPEndPoint(addr, _target.port));
+            socket = new (address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            await socket.ConnectAsync(new IPEndPoint(address, _target.port));
         }
+        else
+        {
+            IPAddress[] addresses = Dns.GetHostAddresses(_target.host);
+            foreach (IPAddress addr in addresses)
+            {
+                socket = new (addr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                await socket.ConnectAsync(new IPEndPoint(addr, _target.port));
+            }
+        }
+
         if (socket is not null && socket.Connected)
         {
             Statistics.RecordConnectionEstablished(_target.host);

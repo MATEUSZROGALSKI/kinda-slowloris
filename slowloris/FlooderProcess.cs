@@ -5,7 +5,7 @@ internal class FlooderProcess
     private readonly List<Task> _tasks;
 
     private bool _isFlooding;
-    private Thread _floodingThread;
+    private Thread? _floodingThread;
     public bool IsFlooding { get => _isFlooding; }
 
     public FlooderProcess(Configuration configuration)
@@ -40,6 +40,6 @@ internal class FlooderProcess
         {
             connection.Stop();
         }
-        _floodingThread.Join(1000);
+        _floodingThread!.Join(1000);
     }
 }
