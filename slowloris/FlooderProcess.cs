@@ -1,4 +1,4 @@
-﻿internal class FlooderProcess
+internal class FlooderProcess
 {
     private readonly Configuration _configuration;
     private readonly List<LimitedHttpConnection> _connections;
