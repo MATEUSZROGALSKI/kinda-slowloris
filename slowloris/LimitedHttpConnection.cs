@@ -54,6 +54,7 @@ internal class LimitedHttpConnection
         while (socket is not null && socket.Connected)
         {
             await KeepAliveAsync();
+            await Task.Delay(500);
         }
         stream.CloseAndDispose();
         socket = null;
