@@ -56,7 +56,7 @@ internal class LimitedHttpConnection
         {
             await ConnectAsync();
             await SendHeadersAsync();
-            while (socket is not null && socket.Connected)
+            while (socket is not null && socket.Connected && _isFlooding)
             {
                 await KeepAliveAsync();
                 await Task.Delay(new Random().Next(0, 500));
