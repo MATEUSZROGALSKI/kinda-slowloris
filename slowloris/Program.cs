@@ -6,6 +6,7 @@ if (!File.Exists("configuration.json"))
     Console.WriteLine("Unable to find configuration file.");
     return;
 }
+
 var configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("configuration.json"));
 if (configuration != null && configuration.targets.Any())
 {

