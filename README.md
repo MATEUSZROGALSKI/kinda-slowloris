@@ -1,6 +1,7 @@
 this needs `configuration.json` with structure:
 {
 	threadCount: numberOfThreadsToUse,
+	ioThreadCount: numberOfInputOutputThreadsToUse,
 	targets: [
 		{
 			host: targetIP,

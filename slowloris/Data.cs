@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 
 internal record TargetInfo(string host, int port, int timeout, int concurrency);
-internal record Configuration(int threadCount, IEnumerable<TargetInfo> targets);
+internal record Configuration(int threadCount, int ioThreadCount, IEnumerable<TargetInfo> targets);
 
 record HostStatistics(long bytesSent, bool isConnected, DateTime connectedEstablished);
 
