@@ -11,7 +11,7 @@ if (configuration != null && configuration.targets.Any())
 {
     try
     {
-        BuildScreen(configuration);
+    BuildScreen(configuration);
     }
     catch (Exception ex)
     {
@@ -31,7 +31,7 @@ if (configuration != null && configuration.targets.Any())
     {
         try
         {
-            UpdateScreen(configuration);
+        UpdateScreen(configuration);
         }
         catch { }
         Thread.Sleep(100);
