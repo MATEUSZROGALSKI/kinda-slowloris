@@ -9,9 +9,10 @@ if (!File.Exists("configuration.json"))
 var configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("configuration.json"));
 if (configuration != null && configuration.targets.Any())
 {
+    Console.Clear();
     try
     {
-    BuildScreen(configuration);
+        BuildScreen(configuration);
     }
     catch (Exception ex)
     {
@@ -49,15 +50,15 @@ void UpdateScreen(Configuration configuration)
         var target = enumerator.Current;
         HostStatistics stats = Statistics.Get(target.host);
 
-        Console.SetCursorPosition("##>> of ".Length, Math.Min(i++, Console.BufferHeight));
+        Console.SetCursorPosition("##>> of ".Length, i++);
         Console.ForegroundColor = stats.isConnected ? connectedFontColor : disconnectedFontColor;
         Console.Write($"{target.host}:");
         Console.ResetColor();
 
-        Console.SetCursorPosition("###>> Total bytes sent: ".Length, Math.Min(i++, Console.BufferHeight));
+        Console.SetCursorPosition("###>> Total bytes sent: ".Length, i++);
         Console.Write(stats.bytesSent);
 
-        Console.SetCursorPosition("###>> Connected since: ".Length, Math.Min(i++, Console.BufferHeight));
+        Console.SetCursorPosition("###>> Connected since: ".Length, i++);
         Console.Write(stats.connectedEstablished);
         i++;
     }
@@ -68,9 +69,9 @@ void BuildScreen(Configuration configuration)
     var connectedFontColor = ConsoleColor.Green;
     var disconnectedFontColor = ConsoleColor.Red;
 
-    Console.WriteLine(new string('#', Console.BufferWidth));
-    Console.WriteLine(new string('#', Console.BufferWidth));
-    Console.WriteLine("#>> Statistics:".PadRight(Console.BufferWidth - 1) + "#");
+    Console.WriteLine(new string('#', Console.WindowWidth));
+    Console.WriteLine(new string('#', Console.WindowWidth));
+    Console.WriteLine("#>> Statistics:".PadRight(Console.WindowWidth - 1) + "#");
     int i = 1;
     var enumerator = configuration.targets.GetEnumerator();
     while (enumerator.MoveNext())
@@ -82,21 +83,21 @@ void BuildScreen(Configuration configuration)
         Console.ForegroundColor = stats.isConnected ? connectedFontColor : disconnectedFontColor;
         Console.Write($"{target.host}:");
         Console.ResetColor();
-        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Min(2 + i++, Console.BufferHeight));
+        Console.SetCursorPosition(Console.WindowWidth - 1, 2 + i++);
         Console.WriteLine("#");
 
         Console.Write($"###>> Total bytes sent: {stats.bytesSent}");
-        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Min(2 + i++, Console.BufferHeight));
+        Console.SetCursorPosition(Console.WindowWidth - 1, 2 + i++);
         Console.WriteLine("#");
 
         Console.Write($"###>> Connected since: {stats.connectedEstablished}");
-        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Min(2 + i++, Console.BufferHeight));
+        Console.SetCursorPosition(Console.WindowWidth - 1, 2 + i++);
         Console.WriteLine("#");
 
         Console.Write("##");
-        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Min(2 + i++, Console.BufferHeight));
+        Console.SetCursorPosition(Console.BufferWidth - 1, 2 + i++);
         Console.WriteLine("#");
     }
-    Console.WriteLine(new string('#', Console.BufferWidth));
-    Console.WriteLine(new string('#', Console.BufferWidth));
+    Console.WriteLine(new string('#', Console.WindowWidth));
+    Console.WriteLine(new string('#', Console.WindowWidth));
 }
