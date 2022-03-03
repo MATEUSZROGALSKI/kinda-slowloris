@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json;
 
+// check for configuration file
 if (!File.Exists("configuration.json"))
 {
+    // if configuration is not found - just return
     Console.WriteLine("Unable to find configuration file.");
     return;
 }
 
+// load configuration
 var configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("configuration.json"));
 if (configuration != null && configuration.targets.Any())
 {
@@ -32,12 +35,17 @@ if (configuration != null && configuration.targets.Any())
     {
         try
         {
-        UpdateScreen(configuration);
+            UpdateScreen(configuration);
         }
         catch { }
         Thread.Sleep(100);
     }
 }
+
+// just visuals below,
+// this might throw some exceptions on smaller screens
+// this can be replaces with any UI ( WinForms, WPF, WinAPI, etc. )
+// no impact on the application itself
 
 void UpdateScreen(Configuration configuration)
 {
@@ -68,6 +76,8 @@ void BuildScreen(Configuration configuration)
 {
     var connectedFontColor = ConsoleColor.Green;
     var disconnectedFontColor = ConsoleColor.Red;
+
+    Console.Clear();
 
     Console.WriteLine(new string('#', Console.WindowWidth));
     Console.WriteLine(new string('#', Console.WindowWidth));

@@ -16,12 +16,21 @@ internal class ThrottledNetworkStream
         _target = target;
     }
 
+    // writes network message as slow as indicated
+    // in the target configuration
     public async Task WriteAsync(byte[] buffer)
     {
         foreach(byte b in buffer)
         {
+            // send the byte and acknowledge the byte was sent (TCP)
+            // we can check if socket is writeable before
+            // but we rely on this method internal exception mechanism
+            // to just throw an exception in case socket was disconnected
             _stream.WriteByte(b);
+            // record that the byte was actually sent
             Statistics.RecordStats(_target.host, 1);
+            // delay sending next bye by the amount specified
+            // in target configuration
             await Task.Delay(_target.timeout);
         }
     }
