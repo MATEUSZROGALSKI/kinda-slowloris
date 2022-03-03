@@ -12,12 +12,11 @@ if (!File.Exists("configuration.json"))
 var configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("configuration.json"));
 if (configuration != null && configuration.targets.Any())
 {
-    Console.Clear();
     try
     {
         BuildScreen(configuration);
     }
-    catch (Exception ex)
+    catch
     {
         Console.WriteLine("Not enough screen space to display statistics.");
     }
