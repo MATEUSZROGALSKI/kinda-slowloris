@@ -1,4 +1,4 @@
-### Slowloris with throttled network stream ###
+# Slowloris with throttled network stream #
   This tool is based on well known slowloris type of (D)DoS attack with addition of throttled network.
 
 ## How does it work ##
