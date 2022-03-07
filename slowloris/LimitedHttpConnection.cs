@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 
@@ -104,7 +105,7 @@ internal class LimitedHttpConnection
                 await Task.Delay(new Random().Next(0, 500));
             }
         }
-        stream?.CloseAndDispose();
+        await stream!.DisposeAsync();
         socket = null;
     }
 

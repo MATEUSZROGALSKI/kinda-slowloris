@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 
 // configuration of a single target
-internal record TargetInfo(string host, int port, int timeout, int concurrency);
+internal record TargetInfo(string host, int port, bool isSecure, int timeout, int concurrency);
 
 // wrapper for multiple targets configuration,
 // this can actually be replaced with IEnumerable<TargetInfo>
