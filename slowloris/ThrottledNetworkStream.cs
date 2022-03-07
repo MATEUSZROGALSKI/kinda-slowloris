@@ -4,8 +4,9 @@ internal class ThrottledNetworkStream
 {
     private readonly NetworkStream _stream;
     private readonly TargetInfo _target;
+    private readonly AutoResetEvent _resetEvent;
 
-    public ThrottledNetworkStream(Socket socket, TargetInfo target)
+    public ThrottledNetworkStream(Socket socket, TargetInfo target, AutoResetEvent resetEvent)
     {
         if (target.timeout < 0)
         {
@@ -14,6 +15,7 @@ internal class ThrottledNetworkStream
 
         _stream = new (socket, true);
         _target = target;
+        _resetEvent = resetEvent;
     }
 
     // writes network message as slow as indicated
@@ -32,6 +34,9 @@ internal class ThrottledNetworkStream
             // delay sending next bye by the amount specified
             // in target configuration
             await Task.Delay(_target.timeout);
+
+            if (_resetEvent.WaitOne(0))
+                break;
         }
     }
 

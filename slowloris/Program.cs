@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 
 // check for configuration file
 if (!File.Exists("configuration.json"))
@@ -12,6 +13,8 @@ if (!File.Exists("configuration.json"))
 var configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText("configuration.json"));
 if (configuration != null && configuration.targets.Any())
 {
+    // if statistics are enabled - show them
+    if (args.Contains("--statistics") || args.Contains("-s"))
     try
     {
         BuildScreen(configuration);
@@ -21,7 +24,9 @@ if (configuration != null && configuration.targets.Any())
         Console.WriteLine("Not enough screen space to display statistics.");
     }
 
+    // create instance of flooder process for current configuration
     var flooder = new FlooderProcess(configuration);
+    // register cancel key to stop flooding
     Console.CancelKeyPress += (sender, e) =>
     {
         flooder.Stop();
@@ -34,7 +39,9 @@ if (configuration != null && configuration.targets.Any())
     {
         try
         {
-            UpdateScreen(configuration);
+            // if statistics are enabled - show them
+            if (args.Contains("--statistics") || args.Contains("-s"))
+                UpdateScreen(configuration);
         }
         catch { }
         Thread.Sleep(100);
@@ -78,6 +85,12 @@ void BuildScreen(Configuration configuration)
 
     Console.Clear();
 
+    try
+    {
+        Console.SetWindowSize(64, 5 + configuration.targets.Count());
+    }
+    catch { }
+
     Console.WriteLine(new string('#', Console.WindowWidth));
     Console.WriteLine(new string('#', Console.WindowWidth));
     Console.WriteLine("#>> Statistics:".PadRight(Console.WindowWidth - 1) + "#");
@@ -104,9 +117,10 @@ void BuildScreen(Configuration configuration)
         Console.WriteLine("#");
 
         Console.Write("##");
-        Console.SetCursorPosition(Console.BufferWidth - 1, 2 + i++);
+        Console.SetCursorPosition(Console.WindowWidth - 1, 2 + i++);
         Console.WriteLine("#");
     }
     Console.WriteLine(new string('#', Console.WindowWidth));
     Console.WriteLine(new string('#', Console.WindowWidth));
+
 }
