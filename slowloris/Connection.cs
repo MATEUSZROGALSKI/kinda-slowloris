@@ -45,7 +45,7 @@ internal class Connection : Socket
         for (int i = 0; i < compatibilityAmount; ++i)
         {
             int c = new Random().Next(0, compatibilityList.Length);
-            compatibility = $"{compatibility}; compatibilityList[c]";
+            compatibility = $"{compatibility}; {compatibilityList[c]}";
         }
 
         result = $"{result} {string.Format(BROWSER_COMPATIBILITY_FORMAT, compatibility)}";
